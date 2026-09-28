@@ -1,5 +1,3 @@
-# log-analyzer
- Python tool that detects brute-force login attempts in server logs
 # Log Analyzer
 
 A Python command-line tool that reads server login logs and detects suspicious activity, such as brute-force password attacks.
@@ -13,7 +11,9 @@ A Python command-line tool that reads server login logs and detects suspicious a
 
 ## Usage
 
+```
 python3 src/analyzer.py logs/sample.log
+```
 
 ## Status
 

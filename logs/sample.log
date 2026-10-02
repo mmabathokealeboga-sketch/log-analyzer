@@ -1,0 +1,15 @@
+Sep 28 08:12:04 server sshd[1021]: Accepted password for kea from 192.168.1.10 port 51422 ssh2
+Sep 28 08:45:17 server sshd[1033]: Failed password for john from 192.168.1.22 port 51533 ssh2
+Sep 28 08:45:29 server sshd[1033]: Accepted password for john from 192.168.1.22 port 51533 ssh2
+Sep 28 09:30:02 server sshd[1050]: Accepted password for thabo from 192.168.1.15 port 52011 ssh2
+Sep 28 10:15:01 server sshd[1102]: Failed password for admin from 203.0.113.45 port 40122 ssh2
+Sep 28 10:15:04 server sshd[1102]: Failed password for admin from 203.0.113.45 port 40122 ssh2
+Sep 28 10:15:07 server sshd[1102]: Failed password for admin from 203.0.113.45 port 40122 ssh2
+Sep 28 10:15:10 server sshd[1102]: Failed password for root from 203.0.113.45 port 40122 ssh2
+Sep 28 10:15:13 server sshd[1102]: Failed password for root from 203.0.113.45 port 40122 ssh2
+Sep 28 10:15:16 server sshd[1102]: Failed password for root from 203.0.113.45 port 40122 ssh2
+Sep 28 10:15:19 server sshd[1102]: Failed password for user from 203.0.113.45 port 40122 ssh2
+Sep 28 10:15:22 server sshd[1102]: Failed password for test from 203.0.113.45 port 40122 ssh2
+Sep 28 11:02:40 server sshd[1150]: Accepted password for kea from 192.168.1.10 port 51890 ssh2
+Sep 28 14:20:11 server sshd[1201]: Failed password for thabo from 192.168.1.15 port 52100 ssh2
+Sep 28 14:20:25 server sshd[1201]: Accepted password for thabo from 192.168.1.15 port 52100 ssh2

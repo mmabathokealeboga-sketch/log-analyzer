@@ -1,9 +1,17 @@
+import re
 import sys
 
 
 def read_log_file(path):
     with open(path) as file:
         return file.readlines()
+
+
+def extract_ip(line):
+    match = re.search(r"from (\d+\.\d+\.\d+\.\d+)", line)
+    if match:
+        return match.group(1)
+    return None
 
 
 def main():
@@ -20,7 +28,8 @@ def main():
         sys.exit(1)
 
     for line in lines:
-        print(line.strip())
+        ip = extract_ip(line)
+        print(ip)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 import re
 import sys
-
+from datetime import datetime
 
 def read_log_file(path):
     with open(path) as file:
@@ -21,6 +21,13 @@ def extract_login_details(line):
     return None, None
 
 
+def extract_time(line):
+    match = re.search(r"^(\w+ +\d+ \d+:\d+:\d+)", line)
+    if match:
+        return datetime.strptime(f"2026 {match.group(1)}", "%Y %b %d %H:%M:%S")
+    return None
+
+
 def main():
     if len(sys.argv) != 2:
         print("Usage: python src/analyzer.py <log_file>")
@@ -35,9 +42,10 @@ def main():
         sys.exit(1)
 
     for line in lines:
+        time = extract_time(line)
         ip = extract_ip(line)
         status, username = extract_login_details(line)
-        print(status, username, ip)
+        print(time, status, username, ip)
 
 
 if __name__ == "__main__":

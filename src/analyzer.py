@@ -14,6 +14,13 @@ def extract_ip(line):
     return None
 
 
+def extract_login_details(line):
+    match = re.search(r"(Failed|Accepted) password for (\S+)", line)
+    if match:
+        return match.group(1), match.group(2)
+    return None, None
+
+
 def main():
     if len(sys.argv) != 2:
         print("Usage: python src/analyzer.py <log_file>")
@@ -29,7 +36,8 @@ def main():
 
     for line in lines:
         ip = extract_ip(line)
-        print(ip)
+        status, username = extract_login_details(line)
+        print(status, username, ip)
 
 
 if __name__ == "__main__":

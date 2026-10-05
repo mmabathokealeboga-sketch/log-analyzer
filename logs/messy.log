@@ -1,0 +1,8 @@
+Sep 28 07:00:01 server systemd[1]: Started Daily Cleanup.
+Sep 28 07:05:12 server sshd[900]: Server listening on 0.0.0.0 port 22.
+Sep 28 08:12:04 server sshd[1021]: Accepted password for kea from 192.168.1.10 port 51422 ssh2
+this line is broken and makes no sense
+
+Sep 28 08:30:44 server CRON[1010]: (root) CMD (backup.sh)
+Sep 28 08:45:17 server sshd[1033]: Failed password for john from 192.168.1.22 port 51533 ssh2
+Sep 28 08:45:29 server sshd[1033]: Accepted password for john from 192.168.1.22 port 51533 ssh2

@@ -28,6 +28,22 @@ def extract_time(line):
     return None
 
 
+def parse_line(line):
+    time = extract_time(line)
+    ip = extract_ip(line)
+    status, username = extract_login_details(line)
+
+    if time is None or ip is None or status is None:
+        return None
+
+    return {
+        "time": time,
+        "status": status,
+        "username": username,
+        "ip": ip,
+    }
+
+
 def main():
     if len(sys.argv) != 2:
         print("Usage: python src/analyzer.py <log_file>")
@@ -42,10 +58,10 @@ def main():
         sys.exit(1)
 
     for line in lines:
-        time = extract_time(line)
-        ip = extract_ip(line)
-        status, username = extract_login_details(line)
-        print(time, status, username, ip)
+        event = parse_line(line)
+        if event is None:
+            continue
+        print(event)
 
 
 if __name__ == "__main__":

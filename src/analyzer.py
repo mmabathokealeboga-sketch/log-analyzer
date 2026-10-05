@@ -65,8 +65,14 @@ def main():
             continue
         failed_attempts.append(event)
 
+    failure_counts = {}
+
     for attempt in failed_attempts:
-        print(attempt["time"], attempt["username"], attempt["ip"])
+        ip = attempt["ip"]
+        failure_counts[ip] = failure_counts.get(ip, 0) + 1
+
+    for ip, count in failure_counts.items():
+        print(f"{ip}: {count} failed attempts")
 
 
 if __name__ == "__main__":

@@ -57,11 +57,16 @@ def main():
         print(f"Error: file '{log_path}' not found.")
         sys.exit(1)
 
+    failed_attempts = []
+
     for line in lines:
         event = parse_line(line)
-        if event is None:
+        if event is None or event["status"] != "Failed":
             continue
-        print(event)
+        failed_attempts.append(event)
+
+    for attempt in failed_attempts:
+        print(attempt["time"], attempt["username"], attempt["ip"])
 
 
 if __name__ == "__main__":

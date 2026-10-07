@@ -1,6 +1,6 @@
 import re
 import sys
-from datetime import datetime
+from datetime import datetime,timedelta
 
 def read_log_file(path):
     with open(path) as file:
@@ -44,6 +44,18 @@ def parse_line(line):
     }
 
 
+def is_brute_force(times, threshold=5, window_seconds=60):
+    window = timedelta(seconds=window_seconds)
+    for start in times:
+        count = 0
+        for time in times:
+            if start <= time <= start + window:
+                count += 1
+        if count >= threshold:
+            return True
+    return False
+
+
 def main():
     if len(sys.argv) != 2:
         print("Usage: python src/analyzer.py <log_file>")
@@ -74,7 +86,8 @@ def main():
         failures_by_ip[ip].append(attempt["time"])
 
     for ip, times in failures_by_ip.items():
-        print(f"{ip}: {len(times)} failed attempts, first at {times[0].time()}, last at {times[-1].time()}")
+        attack = is_brute_force(times)
+        print(f"{ip}: {len(times)} failed attempts, brute-force: {attack}")
 
 
 if __name__ == "__main__":

@@ -85,10 +85,16 @@ def main():
             failures_by_ip[ip] = []
         failures_by_ip[ip].append(attempt["time"])
 
+    attacks_found = False
+
     for ip, times in failures_by_ip.items():
         if is_brute_force(times):
+            attacks_found = True
             seconds = int((times[-1] - times[0]).total_seconds())
             print(f"ALERT: Brute-force detected from {ip} ({len(times)} attempts in {seconds} seconds)")
+
+    if not attacks_found:
+        print("No attacks detected.")
 
 
 if __name__ == "__main__":

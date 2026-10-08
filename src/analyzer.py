@@ -1,4 +1,5 @@
 import re
+import argparse
 import sys
 from datetime import datetime,timedelta
 
@@ -57,11 +58,13 @@ def is_brute_force(times, threshold=5, window_seconds=60):
 
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python src/analyzer.py <log_file>")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="Detect brute-force login attempts in server logs.")
+    parser.add_argument("log_file", help="path to the log file to analyze")
+    parser.add_argument("--threshold", type=int, default=5, help="failed attempts needed to trigger an alert (default: 5)")
+    parser.add_argument("--window", type=int, default=60, help="time window in seconds (default: 60)")
+    args = parser.parse_args()
 
-    log_path = sys.argv[1]
+    log_path = args.log_file
 
     try:
         lines = read_log_file(log_path)
@@ -88,7 +91,7 @@ def main():
     attacks_found = False
 
     for ip, times in failures_by_ip.items():
-        if is_brute_force(times):
+        if is_brute_force(times, args.threshold, args.window):
             attacks_found = True
             seconds = int((times[-1] - times[0]).total_seconds())
             print(f"ALERT: Brute-force detected from {ip} ({len(times)} attempts in {seconds} seconds)")

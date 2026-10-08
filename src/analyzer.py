@@ -64,6 +64,11 @@ def main():
     parser.add_argument("--window", type=int, default=60, help="time window in seconds (default: 60)")
     args = parser.parse_args()
 
+    if args.threshold < 1:
+        parser.error("--threshold must be at least 1")
+    if args.window < 1:
+        parser.error("--window must be at least 1")
+
     log_path = args.log_file
 
     try:

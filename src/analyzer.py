@@ -57,6 +57,10 @@ def is_brute_force(times, threshold=5, window_seconds=60):
     return False
 
 
+def is_odd_hour(time, start_hour=0, end_hour=5):
+    return start_hour <= time.hour < end_hour
+
+
 def main():
     parser = argparse.ArgumentParser(description="Detect brute-force login attempts in server logs.")
     parser.add_argument("log_file", help="path to the log file to analyze")
@@ -78,12 +82,16 @@ def main():
         sys.exit(1)
 
     failed_attempts = []
+    odd_hour_logins = []
 
     for line in lines:
         event = parse_line(line)
-        if event is None or event["status"] != "Failed":
+        if event is None:
             continue
-        failed_attempts.append(event)
+        if event["status"] == "Failed":
+            failed_attempts.append(event)
+        elif is_odd_hour(event["time"]):
+            odd_hour_logins.append(event)
 
     failures_by_ip = {}
 
@@ -100,6 +108,10 @@ def main():
             attacks_found = True
             seconds = int((times[-1] - times[0]).total_seconds())
             print(f"ALERT: Brute-force detected from {ip} ({len(times)} attempts in {seconds} seconds)")
+
+    for login in odd_hour_logins:
+        attacks_found = True
+        print(f"ALERT: Odd-hour login by {login['username']} from {login['ip']} at {login['time'].time()}")
 
     if not attacks_found:
         print("No attacks detected.")

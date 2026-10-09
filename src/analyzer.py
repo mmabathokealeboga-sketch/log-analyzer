@@ -1,7 +1,8 @@
-import re
 import argparse
+import re
 import sys
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
+
 
 def read_log_file(path):
     with open(path) as file:
@@ -94,12 +95,15 @@ def main():
             odd_hour_logins.append(event)
 
     failures_by_ip = {}
+    usernames_by_ip = {}
 
     for attempt in failed_attempts:
         ip = attempt["ip"]
         if ip not in failures_by_ip:
             failures_by_ip[ip] = []
+            usernames_by_ip[ip] = set()
         failures_by_ip[ip].append(attempt["time"])
+        usernames_by_ip[ip].add(attempt["username"])
 
     attacks_found = False
 
@@ -108,6 +112,11 @@ def main():
             attacks_found = True
             seconds = int((times[-1] - times[0]).total_seconds())
             print(f"ALERT: Brute-force detected from {ip} ({len(times)} attempts in {seconds} seconds)")
+
+    for ip, usernames in usernames_by_ip.items():
+        if len(usernames) >= 3:
+            attacks_found = True
+            print(f"ALERT: {ip} tried {len(usernames)} different usernames: {', '.join(sorted(usernames))}")
 
     for login in odd_hour_logins:
         attacks_found = True

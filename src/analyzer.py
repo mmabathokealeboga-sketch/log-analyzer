@@ -82,6 +82,7 @@ def main():
         print(f"Error: file '{log_path}' not found.")
         sys.exit(1)
 
+    login_events = 0
     failed_attempts = []
     odd_hour_logins = []
 
@@ -89,6 +90,7 @@ def main():
         event = parse_line(line)
         if event is None:
             continue
+        login_events += 1
         if event["status"] == "Failed":
             failed_attempts.append(event)
         elif is_odd_hour(event["time"]):
@@ -105,25 +107,32 @@ def main():
         failures_by_ip[ip].append(attempt["time"])
         usernames_by_ip[ip].add(attempt["username"])
 
-    attacks_found = False
+    alert_count = 0
 
     for ip, times in failures_by_ip.items():
         if is_brute_force(times, args.threshold, args.window):
-            attacks_found = True
+            alert_count += 1
             seconds = int((times[-1] - times[0]).total_seconds())
             print(f"ALERT: Brute-force detected from {ip} ({len(times)} attempts in {seconds} seconds)")
 
     for ip, usernames in usernames_by_ip.items():
         if len(usernames) >= 3:
-            attacks_found = True
+            alert_count += 1
             print(f"ALERT: {ip} tried {len(usernames)} different usernames: {', '.join(sorted(usernames))}")
 
     for login in odd_hour_logins:
-        attacks_found = True
+        alert_count += 1
         print(f"ALERT: Odd-hour login by {login['username']} from {login['ip']} at {login['time'].time()}")
 
-    if not attacks_found:
+    if alert_count == 0:
         print("No attacks detected.")
+
+    print()
+    print("--- Summary ---")
+    print(f"Lines read:      {len(lines)}")
+    print(f"Login events:    {login_events}")
+    print(f"Failed attempts: {len(failed_attempts)}")
+    print(f"Alerts raised:   {alert_count}")
 
 
 if __name__ == "__main__":

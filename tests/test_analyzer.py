@@ -4,8 +4,10 @@ from analyzer import (
     extract_ip,
     extract_login_details,
     extract_time,
+    group_failures_by_ip,
     is_brute_force,
     is_odd_hour,
+    is_username_guessing,
     parse_line,
 )
 
@@ -64,6 +66,22 @@ def test_parse_line_skips_empty_line():
     assert parse_line("") is None
 
 
+def test_group_failures_by_ip():
+    attempts = [
+        parse_line(FAILED_LINE),
+        parse_line("Sep 28 10:15:04 server sshd[1102]: Failed password for root from 203.0.113.45 port 40122 ssh2"),
+        parse_line("Sep 28 08:45:17 server sshd[1033]: Failed password for john from 192.168.1.22 port 51533 ssh2"),
+    ]
+    failures_by_ip, usernames_by_ip = group_failures_by_ip(attempts)
+    assert len(failures_by_ip["203.0.113.45"]) == 2
+    assert len(failures_by_ip["192.168.1.22"]) == 1
+    assert usernames_by_ip["203.0.113.45"] == {"admin", "root"}
+
+
+def test_group_failures_by_ip_empty():
+    assert group_failures_by_ip([]) == ({}, {})
+
+
 def test_is_odd_hour_in_the_night():
     assert is_odd_hour(datetime(2026, 9, 29, 2, 47, 13)) is True
 
@@ -118,3 +136,19 @@ def test_brute_force_last_attempt_exactly_on_window_edge():
 def test_brute_force_last_attempt_just_outside_window():
     times = make_times([0, 15, 30, 45, 61])
     assert is_brute_force(times) is False
+
+
+def test_username_guessing_detects_many_usernames():
+    assert is_username_guessing({"admin", "root", "test", "user"}) is True
+
+
+def test_username_guessing_exactly_three():
+    assert is_username_guessing({"admin", "root", "test"}) is True
+
+
+def test_username_guessing_ignores_two():
+    assert is_username_guessing({"admin", "root"}) is False
+
+
+def test_username_guessing_ignores_one():
+    assert is_username_guessing({"john"}) is False

@@ -46,6 +46,21 @@ def parse_line(line):
     }
 
 
+def group_failures_by_ip(failed_attempts):
+    failures_by_ip = {}
+    usernames_by_ip = {}
+
+    for attempt in failed_attempts:
+        ip = attempt["ip"]
+        if ip not in failures_by_ip:
+            failures_by_ip[ip] = []
+            usernames_by_ip[ip] = set()
+        failures_by_ip[ip].append(attempt["time"])
+        usernames_by_ip[ip].add(attempt["username"])
+
+    return failures_by_ip, usernames_by_ip
+
+
 def is_brute_force(times, threshold=5, window_seconds=60):
     window = timedelta(seconds=window_seconds)
     for start in times:
@@ -56,6 +71,10 @@ def is_brute_force(times, threshold=5, window_seconds=60):
         if count >= threshold:
             return True
     return False
+
+
+def is_username_guessing(usernames, min_usernames=3):
+    return len(usernames) >= min_usernames
 
 
 def is_odd_hour(time, start_hour=0, end_hour=5):
@@ -96,16 +115,7 @@ def main():
         elif is_odd_hour(event["time"]):
             odd_hour_logins.append(event)
 
-    failures_by_ip = {}
-    usernames_by_ip = {}
-
-    for attempt in failed_attempts:
-        ip = attempt["ip"]
-        if ip not in failures_by_ip:
-            failures_by_ip[ip] = []
-            usernames_by_ip[ip] = set()
-        failures_by_ip[ip].append(attempt["time"])
-        usernames_by_ip[ip].add(attempt["username"])
+    failures_by_ip, usernames_by_ip = group_failures_by_ip(failed_attempts)
 
     alert_count = 0
 
@@ -116,7 +126,7 @@ def main():
             print(f"ALERT: Brute-force detected from {ip} ({len(times)} attempts in {seconds} seconds)")
 
     for ip, usernames in usernames_by_ip.items():
-        if len(usernames) >= 3:
+        if is_username_guessing(usernames):
             alert_count += 1
             print(f"ALERT: {ip} tried {len(usernames)} different usernames: {', '.join(sorted(usernames))}")
 
